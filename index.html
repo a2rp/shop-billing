@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1" />
+    <title>Shop Billing Lite - Ashish Ranjan</title>
+    <link rel="stylesheet" href="style.css" />
+    <link rel="icon" type="image/svg+xml" href="./images/favicon.ico" />
+</head>
+
+<body>
+    <header class="app-header">
+        <div class="store-meta">
+            <h1 id="storeNameText">Your Store</h1>
+            <div class="store-sub">
+                <span id="storeAddressText">Address line</span>
+                <span>•</span>
+                <span id="storePhoneText">Phone</span>
+            </div>
+        </div>
+
+        <nav class="actions">
+            <button id="btnNewBill" title="New Bill (Alt+N)">New</button>
+            <button id="btnSaveBill" title="Save Bill (Ctrl+S)">Save</button>
+            <button id="btnPrint" title="Print (Ctrl+P)">Print</button>
+            <!-- History button removed -->
+            <button id="btnClearDraft" class="danger" title="Clear Draft">Clear</button>
+            <button id="btnSettings" class="ghost" title="Settings">Settings</button>
+        </nav>
+    </header>
+
+    <section class="bill-info">
+        <div>
+            <strong>Bill No:</strong>
+            <span id="billNumberBadge">DRAFT</span>
+        </div>
+        <div>
+            <strong>Date/Time:</strong>
+            <span id="billDateTime"></span>
+        </div>
+        <div>
+            <strong>Series:</strong>
+            <span id="billSeriesText">SB</span>
+        </div>
+    </section>
+
+    <main class="content">
+        <section class="items-card">
+            <div class="items-head">
+                <h2>Items</h2>
+                <button id="btnAddRow">+ Add Row</button>
+            </div>
+
+            <div class="table-wrap">
+                <table class="items-table" id="itemsTable" aria-label="Billing items">
+                    <thead>
+                        <tr>
+                            <th style="width: 36%">Item Name</th>
+                            <th style="width: 12%">Price</th>
+                            <th style="width: 10%">Qty</th>
+                            <th style="width: 12%">Disc Type</th>
+                            <th style="width: 12%">Disc Value</th>
+                            <th style="width: 14%">Line Total</th>
+                            <th style="width: 4%"></th>
+                        </tr>
+                    </thead>
+                    <tbody id="itemsTbody"></tbody>
+                </table>
+            </div>
+
+            <div class="bill-discount">
+                <label>
+                    Bill Discount
+                    <select id="billDiscType" aria-label="Bill discount type">
+                        <option value="percent">%</option>
+                        <option value="amount">₹</option>
+                    </select>
+                    <input id="billDiscValue" type="number" step="0.01" min="0" value="0" />
+                </label>
+            </div>
+
+            <div class="totals">
+                <div class="total-row">
+                    <span>Sub-total</span>
+                    <strong id="subTotalText">₹0.00</strong>
+                </div>
+                <div class="total-row">
+                    <span>Bill Discount</span>
+                    <strong id="billDiscountAmountText">₹0.00</strong>
+                </div>
+                <div class="total-row grand">
+                    <span>Grand Total</span>
+                    <strong id="grandTotalText">₹0.00</strong>
+                </div>
+            </div>
+
+            <div class="notes">
+                <label>
+                    Note
+                    <input id="noteInput" type="text" placeholder="Optional note on the bill" />
+                </label>
+            </div>
+        </section>
+
+        <!-- History panel is now always visible (hidden removed) -->
+        <aside id="historyPanel" class="history-panel" aria-label="Saved bills history">
+            <div class="history-head">
+                <h3>Saved Bills</h3>
+                <input id="historySearch" type="search" placeholder="Search bill no or date…" />
+            </div>
+            <ul id="historyList" class="history-list"></ul>
+        </aside>
+    </main>
+
+    <!-- Settings Modal -->
+    <dialog id="settingsDialog">
+        <form method="dialog" class="settings-form">
+            <h3>Store Settings</h3>
+            <label>Store Name <input id="setStoreName" type="text" required /></label>
+            <label>Address <input id="setStoreAddress" type="text" /></label>
+            <label>Phone <input id="setStorePhone" type="text" /></label>
+            <div class="row">
+                <label>Bill Series <input id="setBillSeries" type="text" maxlength="6" /></label>
+                <label>Next Number <input id="setNextNumber" type="number" min="1" step="1" /></label>
+            </div>
+
+            <menu class="settings-actions">
+                <button value="cancel" class="ghost">Cancel</button>
+                <button id="btnSaveSettings" value="default">Save</button>
+            </menu>
+        </form>
+    </dialog>
+
+    <div id="printArea" class="print-area" aria-hidden="true"></div>
+
+    <footer class="app-footer">
+        <small>&copy; 2025 | <a href="https://www.ashishranjan.net" target="_blank">Ashish Ranjan</a></small>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
