@@ -98,7 +98,12 @@
         btnSaveSettings: document.getElementById("btnSaveSettings"),
 
         printArea: document.getElementById("printArea"),
+        currentYear: document.getElementById("currentYear"),
     };
+
+    if (els.currentYear) {
+        els.currentYear.textContent = new Date().getFullYear();
+    }
 
     /** ---------- State ---------- **/
     let state = loadState() || withDefaults(null);
