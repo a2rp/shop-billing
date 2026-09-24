@@ -4,19 +4,32 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1" />
-    <title>Shop Billing Lite - Ashish Ranjan</title>
+    <title>Shop Billing | Simple browser billing</title>
+    <meta name="description" content="A lightweight browser billing app for small shops with discounts, saved bills, printing, and local draft storage." />
+    <meta property="og:title" content="Shop Billing" />
+    <meta property="og:description" content="Create, save, search, and print shop bills directly in the browser." />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://a2rp.github.io/shop-billing/" />
+    <meta property="og:image" content="https://a2rp.github.io/shop-billing/preview.png" />
+    <meta name="twitter:card" content="summary_large_image" />
     <link rel="stylesheet" href="style.css" />
-    <link rel="icon" type="image/svg+xml" href="./images/favicon.ico" />
+    <link rel="icon" href="./public/favicon.ico" />
+    <link rel="preload" as="image" href="./public/logo.png" />
 </head>
 
 <body>
     <header class="app-header">
-        <div class="store-meta">
-            <h1 id="storeNameText">Your Store</h1>
-            <div class="store-sub">
-                <span id="storeAddressText">Address line</span>
-                <span>•</span>
-                <span id="storePhoneText">Phone</span>
+        <div class="brand-lockup">
+            <a class="brand-logo" href="./" aria-label="Shop Billing home">
+                <img src="./public/logo.png" alt="" />
+            </a>
+            <div class="store-meta">
+                <h1 id="storeNameText">Your Store</h1>
+                <div class="store-sub">
+                    <span id="storeAddressText">Address line</span>
+                    <span aria-hidden="true">•</span>
+                    <span id="storePhoneText">Phone</span>
+                </div>
             </div>
         </div>
 
@@ -135,7 +148,18 @@
     <div id="printArea" class="print-area" aria-hidden="true"></div>
 
     <footer class="app-footer">
-        <small>&copy; 2025 | <a href="https://www.ashishranjan.net" target="_blank">Ashish Ranjan</a></small>
+        <div class="footer-copy">Copyright &copy; <span id="currentYear"></span> <a href="https://www.ashishranjan.net/" target="_blank" rel="noopener noreferrer">Ashish Ranjan</a></div>
+        <div class="footer-links" aria-label="Social and support links">
+            <a href="https://www.ashishranjan.net/" target="_blank" rel="noopener noreferrer" aria-label="Portfolio" title="Portfolio"><span aria-hidden="true">↗</span></a>
+            <a href="https://github.com/a2rp" target="_blank" rel="noopener noreferrer" aria-label="GitHub" title="GitHub"><span aria-hidden="true">GH</span></a>
+            <a href="https://codepen.io/ash1198" target="_blank" rel="noopener noreferrer" aria-label="CodePen" title="CodePen"><span aria-hidden="true">CP</span></a>
+            <a href="https://www.linkedin.com/in/aashishranjan" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn" title="LinkedIn"><span aria-hidden="true">in</span></a>
+            <a href="https://www.facebook.com/theash.ashish/" target="_blank" rel="noopener noreferrer" aria-label="Facebook" title="Facebook"><span aria-hidden="true">f</span></a>
+            <a href="https://www.youtube.com/@ashishranjan-ashz?sub_confirmation=1" target="_blank" rel="noopener noreferrer" aria-label="YouTube" title="YouTube"><span aria-hidden="true">▶</span></a>
+            <a href="https://a2rp-donation-page.netlify.app/" target="_blank" rel="noopener noreferrer" aria-label="Support" title="Support"><span aria-hidden="true">♥</span></a>
+            <a href="https://buymeacoffee.com/a2rp" target="_blank" rel="noopener noreferrer" aria-label="Buy Me a Coffee" title="Buy Me a Coffee"><span aria-hidden="true">☕</span></a>
+            <a href="https://patreon.com/a2rp" target="_blank" rel="noopener noreferrer" aria-label="Patreon" title="Patreon"><span aria-hidden="true">P</span></a>
+        </div>
     </footer>
 
     <script src="script.js"></script>
