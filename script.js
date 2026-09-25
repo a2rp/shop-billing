@@ -6,7 +6,7 @@
     /** ---------- Utilities ---------- **/
     const padNumber = (n, size = 4) => String(n).padStart(size, "0");
     const nowIso = () => new Date().toISOString();
-    const formatMoney = (n) => `₹${(Number(n) || 0).toFixed(2)}`;
+    const formatMoney = (n) => String.fromCharCode(0x20b9) + (Number(n) || 0).toFixed(2);
     const parseNum = (v) => {
         const n = Number(v);
         return Number.isFinite(n) && n >= 0 ? n : 0;
@@ -99,10 +99,18 @@
 
         printArea: document.getElementById("printArea"),
         currentYear: document.getElementById("currentYear"),
+        btnTop: document.getElementById("btnTop"),
     };
 
     if (els.currentYear) {
         els.currentYear.textContent = new Date().getFullYear();
+    }
+
+    if (els.btnTop) {
+        const updateTopButton = () => els.btnTop.classList.toggle("visible", window.scrollY > 420);
+        window.addEventListener("scroll", updateTopButton, { passive: true });
+        els.btnTop.addEventListener("click", () => window.scrollTo({ top: 0, behavior: "smooth" }));
+        updateTopButton();
     }
 
     /** ---------- State ---------- **/
