@@ -11,6 +11,15 @@
         const n = Number(v);
         return Number.isFinite(n) && n >= 0 ? n : 0;
     };
+    const isRecord = (value) =>
+        value !== null && typeof value === "object" && !Array.isArray(value);
+    const asString = (value, fallback = "") =>
+        typeof value === "string" ? value : fallback;
+    const normalizeBillSeries = (value) =>
+        asString(value)
+            .toUpperCase()
+            .replace(/[^A-Z0-9]/g, "")
+            .slice(0, 6) || "SB";
 
     function clampDiscount(maxBase, type, value) {
         const base = Math.max(0, maxBase);
@@ -114,7 +123,7 @@
     }
 
     /** ---------- State ---------- **/
-    let state = loadState() || withDefaults(null);
+    let state = withDefaults(loadState());
     let autosaveTimer = null;
     let clockTimer = null;
 
@@ -136,25 +145,84 @@
             },
             bills: [],
         };
-        if (!current) return defaults;
+        if (!isRecord(current)) return defaults;
+        const currentSettings = isRecord(current.settings)
+            ? current.settings
+            : {};
+        const currentDraft = isRecord(current.draft) ? current.draft : {};
         return {
-            settings: { ...defaults.settings, ...(current.settings || {}) },
+            settings: {
+                storeName: asString(
+                    currentSettings.storeName,
+                    defaults.settings.storeName
+                ),
+                address: asString(currentSettings.address),
+                phone: asString(currentSettings.phone),
+                billSeries: normalizeBillSeries(
+                    currentSettings.billSeries || defaults.settings.billSeries
+                ),
+                nextNumber: Math.max(
+                    1,
+                    Math.floor(
+                        parseNum(currentSettings.nextNumber) ||
+                            defaults.settings.nextNumber
+                    )
+                ),
+            },
             draft: {
                 ...defaults.draft,
-                ...(current.draft || {}),
-                items: (current.draft?.items || []).map(normalizeItem),
+                billDiscType:
+                    currentDraft.billDiscType === "amount"
+                        ? "amount"
+                        : "percent",
+                billDiscValue: parseNum(currentDraft.billDiscValue),
+                note: asString(currentDraft.note).slice(0, 200),
+                createdAt: Number.isFinite(
+                    Date.parse(asString(currentDraft.createdAt))
+                )
+                    ? currentDraft.createdAt
+                    : defaults.draft.createdAt,
+                items: Array.isArray(currentDraft.items)
+                    ? currentDraft.items.map(normalizeItem)
+                    : [],
             },
-            bills: Array.isArray(current.bills) ? current.bills : [],
+            bills: Array.isArray(current.bills)
+                ? current.bills.map(normalizeBill).filter(Boolean)
+                : [],
         };
     }
 
     function normalizeItem(it) {
+        const item = isRecord(it) ? it : {};
         return {
-            name: it?.name || "",
-            price: Math.max(0, parseNum(it?.price)),
-            qty: Math.max(0, parseNum(it?.qty) || 1),
-            discType: it?.discType === "amount" ? "amount" : "percent",
-            discValue: Math.max(0, parseNum(it?.discValue)),
+            name: asString(item.name),
+            price: parseNum(item.price),
+            qty: Math.max(1, Math.floor(parseNum(item.qty) || 1)),
+            discType: item.discType === "amount" ? "amount" : "percent",
+            discValue: parseNum(item.discValue),
+        };
+    }
+
+    function normalizeBill(bill) {
+        if (
+            !isRecord(bill) ||
+            !asString(bill.id).trim() ||
+            !Array.isArray(bill.items)
+        )
+            return null;
+        const createdAt = asString(bill.createdAt);
+        return {
+            id: asString(bill.id),
+            createdAt: Number.isFinite(Date.parse(createdAt))
+                ? createdAt
+                : nowIso(),
+            items: bill.items.map(normalizeItem),
+            subTotal: parseNum(bill.subTotal),
+            billDiscType: bill.billDiscType === "amount" ? "amount" : "percent",
+            billDiscValue: parseNum(bill.billDiscValue),
+            billDiscAmount: parseNum(bill.billDiscAmount),
+            grandTotal: parseNum(bill.grandTotal),
+            note: asString(bill.note).slice(0, 200),
         };
     }
 
@@ -203,7 +271,7 @@
         <td><input type="number" class="cell price" min="0" step="0.01" value="${
             item.price
         }"/></td>
-        <td><input type="number" class="cell qty" min="0" step="1" value="${
+        <td><input type="number" class="cell qty" min="1" step="1" value="${
             item.qty
         }"/></td>
         <td>
@@ -269,15 +337,18 @@
                 const dateStr = formatDateTimeCustom(
                     new Date(b.createdAt)
                 ).toLowerCase();
-                return b.id.toLowerCase().includes(q) || dateStr.includes(q);
+                return (
+                    b.id.toLowerCase().includes(q) ||
+                    dateStr.includes(q)
+                );
             });
 
         els.historyList.innerHTML = items
             .map((b) => {
                 return `
-        <li class="history-item" data-id="${b.id}">
+        <li class="history-item" data-id="${escapeHtml(b.id)}">
           <div>
-            <div><strong>${b.id}</strong> • ${
+            <div><strong>${escapeHtml(b.id)}</strong> • ${
                     b.items.length
                 } items • <strong>${formatMoney(b.grandTotal)}</strong></div>
             <div class="meta">${formatDateTimeCustom(
@@ -356,8 +427,8 @@
         const name = tr.querySelector(".name").value.trim();
         const price = parseNum(tr.querySelector(".price").value);
         const qty = Math.max(
-            0,
-            Math.floor(parseNum(tr.querySelector(".qty").value))
+            1,
+            Math.floor(parseNum(tr.querySelector(".qty").value) || 1)
         );
         const discType =
             tr.querySelector(".discType").value === "amount"
@@ -602,9 +673,9 @@
             els.setStoreName.value.trim() || "Your Store";
         state.settings.address = els.setStoreAddress.value.trim();
         state.settings.phone = els.setStorePhone.value.trim();
-        state.settings.billSeries = (
-            els.setBillSeries.value.trim() || "SB"
-        ).toUpperCase();
+        state.settings.billSeries = normalizeBillSeries(
+            els.setBillSeries.value
+        );
         state.settings.nextNumber = Math.max(
             1,
             Math.floor(parseNum(els.setNextNumber.value))

@@ -10,6 +10,8 @@ A lightweight vanilla JavaScript billing app for small shops. Create itemized bi
 - Search, reopen, delete, and print saved bills
 - Responsive fixed-header layout with store settings, print-ready slips, and a floating scroll-to-top control
 
+Bills, drafts, and store settings stay in this browser's LocalStorage. They do not sync to other browsers or devices.
+
 ## Tech stack
 
 - HTML, CSS, Sass, and vanilla JavaScript
