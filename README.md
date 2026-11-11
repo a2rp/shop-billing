@@ -7,6 +7,7 @@ A lightweight vanilla JavaScript billing app for small shops. Create itemized bi
 - Item rows with price, quantity, and percentage or amount discounts
 - Bill-level discount and grand total calculation
 - LocalStorage draft saving and saved bill history
+- Bill numbering skips identifiers already used in the current series
 - Search, reopen, delete, and print saved bills
 - Responsive fixed-header layout with store settings, print-ready slips, and a floating scroll-to-top control
 

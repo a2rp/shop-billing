@@ -21,6 +21,33 @@
             .replace(/[^A-Z0-9]/g, "")
             .slice(0, 6) || "SB";
 
+    function findNextBillNumber() {
+        const series = normalizeBillSeries(state.settings.billSeries);
+        let number = Math.max(
+            1,
+            Math.floor(parseNum(state.settings.nextNumber) || 1)
+        );
+        if (!Number.isSafeInteger(number)) return null;
+
+        const usedNumbers = new Set(
+            state.bills
+                .map((bill) => {
+                    const match = /^([A-Z0-9]+)-(\d+)$/i.exec(bill.id);
+                    return match && match[1].toUpperCase() === series
+                        ? Number(match[2])
+                        : null;
+                })
+                .filter(Number.isSafeInteger)
+        );
+
+        while (usedNumbers.has(number)) {
+            if (number === Number.MAX_SAFE_INTEGER) return null;
+            number += 1;
+        }
+
+        return { series, number, id: `${series}-${padNumber(number)}` };
+    }
+
     function clampDiscount(maxBase, type, value) {
         const base = Math.max(0, maxBase);
         if (type === "percent") {
@@ -473,9 +500,10 @@
 
         const { subTotal, billDiscountAmount, grandTotal } = computeTotals();
 
-        const id = `${state.settings.billSeries || "SB"}-${padNumber(
-            state.settings.nextNumber || 1
-        )}`;
+        const nextBill = findNextBillNumber();
+        if (!nextBill)
+            return alert("No unused bill number remains for this series. Choose another series in Settings.");
+        const { id, number } = nextBill;
         const bill = {
             id,
             createdAt: nowIso(),
@@ -489,7 +517,8 @@
         };
 
         state.bills.push(bill);
-        state.settings.nextNumber = (state.settings.nextNumber || 1) + 1;
+        state.settings.nextNumber =
+            number < Number.MAX_SAFE_INTEGER ? number + 1 : number;
         saveState();
 
         state.draft = {
